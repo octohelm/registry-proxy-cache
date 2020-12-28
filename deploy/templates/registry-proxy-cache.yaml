@@ -1,0 +1,2 @@
+expose:
+  hosts: {{ .Values.hosts }}

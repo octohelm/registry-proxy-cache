@@ -1,0 +1,28 @@
+version: 0.1
+
+log:
+  level: info
+
+http:
+  addr: 0.0.0.0:5000
+  debug:
+    addr: 0.0.0.0:5005
+    prometheus:
+      enabled: true
+
+proxies:
+  quay.io:
+    remoteurl: https://quay.io
+  docker.io:
+    remoteurl: https://registry-1.docker.io
+  ghcr.io:
+    remoteurl: https://ghcr.io
+  gcr.io:
+    remoteurl: https://gcr.io
+  k8s.gcr.io:
+    remoteurl: https://k8s.gcr.io
+
+storage:
+  filesystem:
+    maxthreads: 100
+    rootdirectory: /data/registry-cache

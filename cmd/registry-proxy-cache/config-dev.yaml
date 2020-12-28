@@ -1,0 +1,20 @@
+version: 0.1
+
+log:
+  level: info
+
+http:
+  addr: 0.0.0.0:5000
+  debug:
+    addr: 0.0.0.0:5005
+    prometheus:
+      enabled: true
+
+proxies:
+  docker.io:
+    remoteurl: https://registry-1.docker.io
+
+storage:
+  filesystem:
+    maxthreads: 100
+    rootdirectory: /tmp/registry-cache
