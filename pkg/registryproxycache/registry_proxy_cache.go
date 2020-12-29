@@ -70,7 +70,7 @@ func (r *RegistryProxyCache) ListenAndServe() error {
 
 	if config.HTTP.Debug.Addr != "" {
 		go func(addr string) {
-			log.Infof("debug server listening %v (%s,%s)", addr)
+			log.Infof("debug server listening %v (%s,%s)", addr, runtime.GOOS, runtime.GOARCH)
 
 			if err := http.ListenAndServe(addr, nil); err != nil {
 				log.Fatalf("error listening on debug interface: %v", err)

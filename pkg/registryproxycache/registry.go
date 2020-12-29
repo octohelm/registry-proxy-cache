@@ -54,19 +54,26 @@ func (registries RegistryHandlers) RegistryMirrorMiddleware() func(next http.Han
 			if strings.HasPrefix(req.URL.Path, "/hub-prefix-mirrors/") {
 
 				for hub := range registries {
-					p := "/hub-prefix-mirrors/" + hub + "/v2/"
+					m := "/hub-prefix-mirrors/" + hub + "/"
 
-					if strings.HasPrefix(req.URL.Path, p) {
+					if strings.HasPrefix(req.URL.Path, m) {
+						v2 := "/hub-prefix-mirrors/" + hub + "/v2/"
+
+						if !strings.HasPrefix(req.URL.Path, v2) {
+							http.Redirect(rw, req, v2+req.URL.Path[len(m):], http.StatusMovedPermanently)
+							return
+						}
+
 						// skip _catalog
-						if strings.HasPrefix(req.URL.Path, p+"_") {
-							req.URL.Path = "/v2/" + req.URL.Path[len(p):]
+						if strings.HasPrefix(req.URL.Path, v2+"_") {
+							req.URL.Path = "/v2/" + req.URL.Path[len(v2):]
 							req.RequestURI = req.URL.RequestURI()
 
 							registries[hub].ServeHTTP(rw, req)
 							return
 						}
 
-						req.URL.Path = "/v2/" + hub + "/" + req.URL.Path[len(p):]
+						req.URL.Path = "/v2/" + hub + "/" + req.URL.Path[len(v2):]
 						req.RequestURI = req.URL.RequestURI()
 
 						registries[hub].ServeHTTP(rw, req)
@@ -79,10 +86,17 @@ func (registries RegistryHandlers) RegistryMirrorMiddleware() func(next http.Han
 
 			if strings.HasPrefix(req.URL.Path, "/mirrors/") {
 				for hub := range registries {
-					p := "/mirrors/" + hub + "/v2/"
+					m := "/mirrors/" + hub + "/"
 
-					if strings.HasPrefix(req.URL.Path, p) {
-						req.URL.Path = "/v2/" + req.URL.Path[len(p):]
+					if strings.HasPrefix(req.URL.Path, m) {
+						v2 := "/mirrors/" + hub + "/v2/"
+
+						if !strings.HasPrefix(req.URL.Path, v2) {
+							http.Redirect(rw, req, v2+req.URL.Path[len(m):], http.StatusMovedPermanently)
+							return
+						}
+
+						req.URL.Path = "/v2/" + req.URL.Path[len(v2):]
 
 						req.RequestURI = req.URL.RequestURI()
 

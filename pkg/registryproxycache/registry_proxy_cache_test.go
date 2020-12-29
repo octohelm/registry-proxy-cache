@@ -59,13 +59,17 @@ func TestRegistryProxyCache(t *testing.T) {
 		}()
 
 		t.Run("as mirror", func(t *testing.T) {
-			data, err := manifest("library/busybox", "latest", "/mirrors/docker.io", c.HTTP.Addr)
+			data, err := manifest("library/busybox", "latest", "/mirrors/docker.io/v2/", c.HTTP.Addr)
 			NewWithT(t).Expect(err).Should(BeNil())
 			NewWithT(t).Expect(data["manifests"]).ShouldNot(BeNil())
+
+			data2, err := manifest("library/busybox", "latest", "/mirrors/docker.io/", c.HTTP.Addr)
+			NewWithT(t).Expect(err).Should(BeNil())
+			NewWithT(t).Expect(data2["manifests"]).ShouldNot(BeNil())
 		})
 
 		t.Run("hub prefix", func(t *testing.T) {
-			data, err := manifest("docker.io/library/busybox", "latest", "", c.HTTP.Addr)
+			data, err := manifest("docker.io/library/busybox", "latest", "/v2/", c.HTTP.Addr)
 			NewWithT(t).Expect(err).Should(BeNil())
 			NewWithT(t).Expect(data["manifests"]).ShouldNot(BeNil())
 		})
@@ -89,7 +93,7 @@ func TestRegistryProxyCache(t *testing.T) {
 		}()
 
 		t.Run("hub prefix mirror", func(t *testing.T) {
-			data, err := manifest("library/busybox", "latest", "/hub-prefix-mirrors/docker.io", c2.HTTP.Addr)
+			data, err := manifest("library/busybox", "latest", "/hub-prefix-mirrors/docker.io/v2/", c2.HTTP.Addr)
 			NewWithT(t).Expect(err).Should(BeNil())
 			NewWithT(t).Expect(data["manifests"]).ShouldNot(BeNil())
 		})
@@ -100,7 +104,7 @@ func TestRegistryProxyCache(t *testing.T) {
 }
 
 func manifest(name string, ref string, prefix string, host string) (map[string]interface{}, error) {
-	req, err := http.NewRequest("GET", "http://"+host+prefix+"/v2/"+name+"/manifests/"+ref, nil)
+	req, err := http.NewRequest("GET", "http://"+host+prefix+name+"/manifests/"+ref, nil)
 	if err != nil {
 		return nil, err
 	}
