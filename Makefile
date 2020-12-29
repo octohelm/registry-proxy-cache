@@ -3,6 +3,7 @@ VERSION = $(shell cat .version)
 COMMIT_SHA ?= $(shell git rev-parse --short HEAD)
 
 GOBUILD = CGO_ENABLED=0 STATIC=0 go build -ldflags "-extldflags -static -s -w -X $(PKG)/pkg/version.Version=$(VERSION)+sha.$(COMMIT_SHA)"
+GOTEST = go test -v -race
 GOBIN ?= ./bin
 
 GOOS ?= $(shell go env GOOS)
@@ -22,7 +23,10 @@ up:
 	REGISTRY_CONFIGURATION_PATH=$(REGISTRY_CONFIGURATION_PATH) go run $(WORKSPACE) config.yaml
 
 test:
-	go test -v -race ./...
+	$(GOTEST) ./...
+
+cover:
+	$(GOTEST) -coverprofile=coverage.txt -covermode=atomic ./...
 
 build:
 	$(GOBUILD) -o $(GOBIN)/$(APP)-$(GOOS)-$(GOARCH) $(WORKSPACE)

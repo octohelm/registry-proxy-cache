@@ -1,5 +1,10 @@
 # Registry Proxy Cache
 
+[![GoDoc Widget](https://godoc.org/github.com/octohelm/registry-proxy-cache?status.svg)](https://godoc.org/github.com/octohelm/registry-proxy-cache)
+[![codecov](https://codecov.io/gh/octohelm/registry-proxy-cache/branch/master/graph/badge.svg)](https://codecov.io/gh/octohelm/registry-proxy-cache)
+[![Go Report Card](https://goreportcard.com/badge/github.com/octohelm/registry-proxy-cache)](https://goreportcard.com/report/github.com/octohelm/registry-proxy-cache)
+
+
 ## Usage
 
 ### Quick Start
