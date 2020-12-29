@@ -32,11 +32,16 @@ func (registries RegistryHandlers) RegistryHandler() http.Handler {
 				p := "/v2/" + hub + "/"
 
 				if strings.HasPrefix(req.URL.Path, p) {
-					req.URL.Path = "/v2/" + req.URL.Path[len(p):]
+					originPath := req.URL.Path
 
+					req.URL.Path = "/v2/" + req.URL.Path[len(p):]
 					req.RequestURI = req.URL.RequestURI()
 
 					registries[hub].ServeHTTP(rw, req)
+
+					req.URL.Path = originPath
+					req.RequestURI = req.URL.RequestURI()
+
 					return
 				}
 			}
@@ -52,9 +57,10 @@ func (registries RegistryHandlers) RegistryMirrorMiddleware() func(next http.Han
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 			if strings.HasPrefix(req.URL.Path, "/hub-prefix-mirrors/") {
-
 				for hub := range registries {
 					m := "/hub-prefix-mirrors/" + hub + "/"
+
+					req.Header.Set("User-Agent", fmt.Sprintf("Proxy-Cache/%s %s", hub, req.Header.Get("User-Agent")))
 
 					if strings.HasPrefix(req.URL.Path, m) {
 						v2 := "/hub-prefix-mirrors/" + hub + "/v2/"
@@ -64,22 +70,28 @@ func (registries RegistryHandlers) RegistryMirrorMiddleware() func(next http.Han
 							return
 						}
 
+						originPath := req.URL.Path
+
 						// skip _catalog
 						if strings.HasPrefix(req.URL.Path, v2+"_") {
 							req.URL.Path = "/v2/" + req.URL.Path[len(v2):]
-							req.RequestURI = req.URL.RequestURI()
-
-							registries[hub].ServeHTTP(rw, req)
-							return
+						} else {
+							req.URL.Path = "/v2/" + hub + "/" + req.URL.Path[len(v2):]
 						}
 
-						req.URL.Path = "/v2/" + hub + "/" + req.URL.Path[len(v2):]
 						req.RequestURI = req.URL.RequestURI()
 
 						registries[hub].ServeHTTP(rw, req)
+
+						req.URL.Path = originPath
+						req.RequestURI = req.URL.RequestURI()
+
 						return
 					}
 				}
+
+				rw.WriteHeader(http.StatusNotFound)
+				_, _ = rw.Write(nil)
 
 				return
 			}
@@ -87,6 +99,8 @@ func (registries RegistryHandlers) RegistryMirrorMiddleware() func(next http.Han
 			if strings.HasPrefix(req.URL.Path, "/mirrors/") {
 				for hub := range registries {
 					m := "/mirrors/" + hub + "/"
+
+					req.Header.Set("User-Agent", fmt.Sprintf("Proxy-Cache/%s %s", hub, req.Header.Get("User-Agent")))
 
 					if strings.HasPrefix(req.URL.Path, m) {
 						v2 := "/mirrors/" + hub + "/v2/"
@@ -105,6 +119,8 @@ func (registries RegistryHandlers) RegistryMirrorMiddleware() func(next http.Han
 					}
 				}
 
+				rw.WriteHeader(http.StatusNotFound)
+				_, _ = rw.Write(nil)
 				return
 			}
 
