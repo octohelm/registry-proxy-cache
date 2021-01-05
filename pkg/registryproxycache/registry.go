@@ -37,6 +37,7 @@ func (registries RegistryHandlers) RegistryHandler() http.Handler {
 					req.URL.Path = "/v2/" + req.URL.Path[len(p):]
 					req.RequestURI = req.URL.RequestURI()
 
+					req.Header.Set("User-Agent", fmt.Sprintf("Proxy-Cache/%s %s", hub, req.Header.Get("User-Agent")))
 					registries[hub].ServeHTTP(rw, req)
 
 					req.URL.Path = originPath
@@ -60,8 +61,6 @@ func (registries RegistryHandlers) RegistryMirrorMiddleware() func(next http.Han
 				for hub := range registries {
 					m := "/hub-prefix-mirrors/" + hub + "/"
 
-					req.Header.Set("User-Agent", fmt.Sprintf("Proxy-Cache/%s %s", hub, req.Header.Get("User-Agent")))
-
 					if strings.HasPrefix(req.URL.Path, m) {
 						v2 := "/hub-prefix-mirrors/" + hub + "/v2/"
 
@@ -78,9 +77,9 @@ func (registries RegistryHandlers) RegistryMirrorMiddleware() func(next http.Han
 						} else {
 							req.URL.Path = "/v2/" + hub + "/" + req.URL.Path[len(v2):]
 						}
-
 						req.RequestURI = req.URL.RequestURI()
 
+						req.Header.Set("User-Agent", fmt.Sprintf("Proxy-Cache/%s %s", hub, req.Header.Get("User-Agent")))
 						registries[hub].ServeHTTP(rw, req)
 
 						req.URL.Path = originPath
@@ -100,21 +99,25 @@ func (registries RegistryHandlers) RegistryMirrorMiddleware() func(next http.Han
 				for hub := range registries {
 					m := "/mirrors/" + hub + "/"
 
-					req.Header.Set("User-Agent", fmt.Sprintf("Proxy-Cache/%s %s", hub, req.Header.Get("User-Agent")))
-
 					if strings.HasPrefix(req.URL.Path, m) {
+
 						v2 := "/mirrors/" + hub + "/v2/"
 
+						originPath := req.URL.Path
 						if !strings.HasPrefix(req.URL.Path, v2) {
 							http.Redirect(rw, req, v2+req.URL.Path[len(m):], http.StatusMovedPermanently)
 							return
 						}
 
 						req.URL.Path = "/v2/" + req.URL.Path[len(v2):]
-
 						req.RequestURI = req.URL.RequestURI()
 
+						req.Header.Set("User-Agent", fmt.Sprintf("Proxy-Cache/%s %s", hub, req.Header.Get("User-Agent")))
 						registries[hub].ServeHTTP(rw, req)
+
+						req.URL.Path = originPath
+						req.RequestURI = req.URL.RequestURI()
+
 						return
 					}
 				}
