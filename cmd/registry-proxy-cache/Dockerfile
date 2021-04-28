@@ -33,3 +33,8 @@ COPY cmd/registry-proxy-cache/config.yaml /etc/docker/registry/config.yml
 ENV REGISTRY_CONFIGURATION_PATH /etc/docker/registry/config.yml
 
 ENTRYPOINT ["/go/bin/registry-proxy-cache"]
+
+# CGO_ENABLED=0 causes /etc/hosts not work
+# https://github.com/golang/go/issues/22846
+RUN echo "hosts: files dns" > /etc/nsswitch.conf
+
