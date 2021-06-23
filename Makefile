@@ -5,6 +5,7 @@ COMMIT_SHA ?= $(shell git rev-parse --short HEAD)
 GOBUILD = CGO_ENABLED=0 STATIC=0 go build -ldflags "-extldflags -static -s -w -X $(PKG)/pkg/version.Version=$(VERSION)+sha.$(COMMIT_SHA)"
 GOTEST = go test -v -race
 GOBIN ?= ./bin
+GOBUILD_TAGS= -tags include_oss
 
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
@@ -20,7 +21,7 @@ REGISTRY_CONFIGURATION_PATH = $(WORKSPACE)/config-dev.yaml
 NAMESPACE = registry-proxy-cache
 
 up:
-	REGISTRY_CONFIGURATION_PATH=$(REGISTRY_CONFIGURATION_PATH) go run $(WORKSPACE) config.yaml
+	REGISTRY_CONFIGURATION_PATH=$(REGISTRY_CONFIGURATION_PATH) go run $(WORKSPACE) $(GOBUILD_TAGS)
 
 test:
 	$(GOTEST) ./...
@@ -29,7 +30,7 @@ cover:
 	$(GOTEST) -coverprofile=coverage.txt -covermode=atomic ./...
 
 build:
-	$(GOBUILD) -o $(GOBIN)/$(APP)-$(GOOS)-$(GOARCH) $(WORKSPACE)
+	$(GOBUILD) $(GOBUILD_TAGS) -o $(GOBIN)/$(APP)-$(GOOS)-$(GOARCH) $(WORKSPACE)
 
 PLATFORMS = amd64 arm64
 BUILDER ?= docker
