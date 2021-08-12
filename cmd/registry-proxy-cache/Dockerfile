@@ -1,5 +1,5 @@
 ARG BUILDER=docker
-FROM --platform=${BUILDPLATFORM} golang:1.15-buster AS builder-docker
+FROM --platform=${BUILDPLATFORM} golang:1.16-buster AS builder-docker
 
 ARG GOPROXY
 WORKDIR /go/src

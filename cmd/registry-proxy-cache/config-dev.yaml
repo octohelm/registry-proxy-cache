@@ -19,4 +19,5 @@ proxies:
 storage:
   filesystem:
     maxthreads: 100
+    # /tmp/registry-cache/${hub}
     rootdirectory: /tmp/registry-cache

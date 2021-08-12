@@ -3,35 +3,18 @@ package registryproxycache
 import (
 	"context"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"runtime"
 	"syscall"
 
-	dcontext "github.com/docker/distribution/context"
+	dcontext "github.com/distribution/distribution/v3/context"
+	"github.com/distribution/distribution/v3/registry/listener"
+
 	"github.com/docker/go-metrics"
-
-	"github.com/docker/distribution/registry/listener"
-	"github.com/octohelm/registry-proxy-cache/pkg/configuration"
-
 	gorhandlers "github.com/gorilla/handlers"
-
-	_ "net/http/pprof"
-
-	_ "github.com/docker/distribution/registry/auth/htpasswd"
-	_ "github.com/docker/distribution/registry/auth/silly"
-	_ "github.com/docker/distribution/registry/auth/token"
-	_ "github.com/docker/distribution/registry/proxy"
-	_ "github.com/docker/distribution/registry/storage/driver/azure"
-	_ "github.com/docker/distribution/registry/storage/driver/filesystem"
-	_ "github.com/docker/distribution/registry/storage/driver/gcs"
-	_ "github.com/docker/distribution/registry/storage/driver/inmemory"
-	_ "github.com/docker/distribution/registry/storage/driver/middleware/alicdn"
-	_ "github.com/docker/distribution/registry/storage/driver/middleware/cloudfront"
-	_ "github.com/docker/distribution/registry/storage/driver/middleware/redirect"
-	_ "github.com/docker/distribution/registry/storage/driver/oss"
-	_ "github.com/docker/distribution/registry/storage/driver/s3-aws"
-	_ "github.com/docker/distribution/registry/storage/driver/swift"
+	"github.com/octohelm/registry-proxy-cache/pkg/configuration"
 )
 
 var quit = make(chan os.Signal, 1)

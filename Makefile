@@ -15,13 +15,18 @@ WORKSPACE ?= ./cmd/$(APP)
 
 DOCKERX_LABELS ?=
 HUB ?= docker.io/octohelm
-TAG ?= master
+TAG ?= $(COMMIT_SHA)
 
 REGISTRY_CONFIGURATION_PATH = $(WORKSPACE)/config-dev.yaml
 NAMESPACE = registry-proxy-cache
 
+REGISTRY_PROXY_CACHE = REGISTRY_CONFIGURATION_PATH=$(REGISTRY_CONFIGURATION_PATH) go run $(WORKSPACE)
+
 up:
-	REGISTRY_CONFIGURATION_PATH=$(REGISTRY_CONFIGURATION_PATH) go run $(WORKSPACE) $(GOBUILD_TAGS)
+	$(REGISTRY_PROXY_CACHE)
+
+gc:
+	$(REGISTRY_PROXY_CACHE) gc
 
 test:
 	$(GOTEST) ./...
@@ -31,6 +36,9 @@ cover:
 
 build:
 	$(GOBUILD) $(GOBUILD_TAGS) -o $(GOBIN)/$(APP)-$(GOOS)-$(GOARCH) $(WORKSPACE)
+
+fmt:
+	goimports -w -l .
 
 PLATFORMS = amd64 arm64
 BUILDER ?= docker
@@ -52,11 +60,3 @@ dockerx:
 
 dockerx.dev: buildx
 	$(MAKE) dockerx BUILDER=local
-
-
-WORKING_DIR = ./deploy
-
-include $(WORKING_DIR)/components/Makefile
-
-apply.%:
-	$(MAKE) apply COMPONENT=$*

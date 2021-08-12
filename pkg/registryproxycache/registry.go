@@ -4,19 +4,17 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"regexp"
 	"strings"
 
-	dconfiguration "github.com/docker/distribution/configuration"
-	dcontext "github.com/docker/distribution/context"
-	"github.com/docker/distribution/health"
-	_ "github.com/docker/distribution/registry"
-	"github.com/docker/distribution/registry/handlers"
-	"github.com/docker/distribution/uuid"
-	"github.com/octohelm/registry-proxy-cache/pkg/configuration"
-	"gopkg.in/yaml.v2"
-
 	_ "unsafe"
+
+	dconfiguration "github.com/distribution/distribution/v3/configuration"
+	dcontext "github.com/distribution/distribution/v3/context"
+	"github.com/distribution/distribution/v3/health"
+	_ "github.com/distribution/distribution/v3/registry"
+	"github.com/distribution/distribution/v3/registry/handlers"
+	"github.com/distribution/distribution/v3/uuid"
+	"github.com/octohelm/registry-proxy-cache/pkg/configuration"
 )
 
 type RegistryHandlers map[string]http.Handler
@@ -132,55 +130,13 @@ func (registries RegistryHandlers) RegistryMirrorMiddleware() func(next http.Han
 	}
 }
 
-var rerootdirectory = regexp.MustCompile("rootdirectory: ([^\n]+)")
-
 func NewRegistryHandlers(ctx context.Context, config *configuration.Configuration) (RegistryHandlers, error) {
-	if len(config.Proxies) == 0 {
-		config.Proxies = map[string]configuration.Proxy{}
-	}
-
-	if _, ok := config.Proxies["docker.io"]; !ok {
-		config.Proxies["docker.io"] = configuration.Proxy{
-			RemoteURL: "https://registry-1.docker.io",
-		}
-	}
-
-	proxies := make(map[string]configuration.Proxy)
-
-	for hub := range config.Proxies {
-		proxies[hub] = config.Proxies[hub]
-	}
-
-	config.Proxies = nil
-	configYAML, _ := yaml.Marshal(config)
+	dconfigs := configuration.ToDistributionConfigurations(config)
 
 	registryHandlers := RegistryHandlers{}
 
-	for hub := range proxies {
-		proxy := proxies[hub]
-
-		configYAML2 := rerootdirectory.ReplaceAllFunc(configYAML, func(bytes []byte) []byte {
-			return append(rerootdirectory.FindSubmatch(bytes)[0], []byte("/"+hub)...)
-		})
-
-		c := &dconfiguration.Configuration{}
-		_ = yaml.Unmarshal(configYAML2, c)
-
-		c.Proxy.RemoteURL = proxy.RemoteURL
-		c.Proxy.Username = proxy.Username
-		c.Proxy.Password = proxy.Password
-
-		if c.Log.Fields == nil {
-			c.Log.Fields = map[string]interface{}{}
-		}
-
-		c.Log.Fields["hub"] = hub
-
-		// registry must disable debug
-		c.HTTP.Debug.Addr = ""
-		c.HTTP.Debug.Prometheus.Enabled = false
-
-		r, err := NewRegistryHandler(ctx, c)
+	for hub := range dconfigs {
+		r, err := NewRegistryHandler(ctx, dconfigs[hub])
 		if err != nil {
 			return nil, err
 		}
@@ -216,17 +172,17 @@ func NewRegistryHandler(ctx context.Context, config *dconfiguration.Configuratio
 
 }
 
-//go:linkname  configureBugsnag github.com/docker/distribution/registry.configureBugsnag
+//go:linkname  configureBugsnag github.com/distribution/distribution/v3/registry.configureBugsnag
 func configureBugsnag(config *dconfiguration.Configuration)
 
-//go:linkname  configureLogging github.com/docker/distribution/registry.configureLogging
+//go:linkname  configureLogging github.com/distribution/distribution/v3/registry.configureLogging
 func configureLogging(ctx context.Context, config *dconfiguration.Configuration) (context.Context, error)
 
-//go:linkname  panicHandler github.com/docker/distribution/registry.panicHandler
+//go:linkname  panicHandler github.com/distribution/distribution/v3/registry.panicHandler
 func panicHandler(handler http.Handler) http.Handler
 
-//go:linkname  configureReporting github.com/docker/distribution/registry.configureReporting
+//go:linkname  configureReporting github.com/distribution/distribution/v3/registry.configureReporting
 func configureReporting(app *handlers.App) http.Handler
 
-//go:linkname  alive github.com/docker/distribution/registry.alive
+//go:linkname  alive github.com/distribution/distribution/v3/registry.alive
 func alive(path string, handler http.Handler) http.Handler

@@ -1,33 +1,64 @@
 package main
 
 import (
+	"context"
+	"flag"
 	"fmt"
+	"github.com/octohelm/registry-proxy-cache/pkg/kubernetes"
+	"github.com/octohelm/registry-proxy-cache/pkg/storage"
 	"os"
 
-	dcontext "github.com/docker/distribution/context"
-	"github.com/docker/distribution/version"
+	dcontext "github.com/distribution/distribution/v3/context"
+	"github.com/distribution/distribution/v3/version"
 	"github.com/octohelm/registry-proxy-cache/pkg/configuration"
 	"github.com/octohelm/registry-proxy-cache/pkg/registryproxycache"
 )
+
+func init() {
+	flag.Parse()
+}
 
 func main() {
 	// setup context
 	ctx := dcontext.WithVersion(dcontext.Background(), version.Version)
 
-	log := dcontext.GetLogger(ctx)
-
-	config, err := resolveConfiguration()
+	c, err := resolveConfiguration()
 	if err != nil {
-		log.Fatalf("configuration error: %v", err)
+		dcontext.GetLogger(ctx).Fatalf("configuration error: %v", err)
 		os.Exit(1)
 	}
 
-	r, err := registryproxycache.NewRegistryProxyCache(ctx, config)
+	if args := flag.CommandLine.Args(); len(args) > 0 && args[0] == "gc" {
+		gc(ctx, c)
+		return
+	}
+
+	server(ctx, c)
+}
+
+func gc(ctx context.Context, c *configuration.Configuration) {
+	log := dcontext.GetLogger(ctx)
+
+	images, err := kubernetes.GetClusterContainerImages(ctx)
+	if err != nil {
+		log.Fatalf("get cluster container images failed: %v", err)
+		os.Exit(1)
+	}
+
+	if err := storage.ClusterGarbageCollect(ctx, configuration.ToDistributionConfigurations(c), images, false); err != nil {
+		log.Fatalf("garbage collect failed: %v", err)
+		os.Exit(1)
+	}
+}
+
+func server(ctx context.Context, c *configuration.Configuration) {
+	log := dcontext.GetLogger(ctx)
+
+	r, err := registryproxycache.NewRegistryProxyCache(ctx, c)
 	if err != nil {
 		log.Fatalln(err)
 		return
 	}
-
 	if err = r.ListenAndServe(); err != nil {
 		log.Fatalln(err)
 	}
