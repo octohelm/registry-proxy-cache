@@ -37,9 +37,6 @@ jobs:
           DOCKERX_LABELS: org.opencontainers.image.source=https://github.com/${{ github.repository }} org.opencontainers.image.revision=${{ github.sha }}
         run: |-
           export TAG=${{ github.sha }}
-          if [[ ${{ github.ref }} == "refs/heads/"* ]]; then
-            export TAG=$(echo ${{ github.ref }} | sed -e "s/refs\/heads\///")
-          fi
           if [[ ${{ github.ref }} == "refs/tags/v"* ]]; then
             export TAG=$(echo ${{ github.ref }} | sed -e "s/refs\/tags\/v//")
           fi
