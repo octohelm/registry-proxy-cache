@@ -2,7 +2,7 @@ package storage
 
 import (
 	"context"
-
+	"fmt"
 	"github.com/distribution/distribution/v3"
 	"github.com/distribution/distribution/v3/configuration"
 	"github.com/distribution/distribution/v3/reference"
@@ -88,7 +88,7 @@ func UntagUnused(ctx context.Context, sr distribution.Namespace, used map[string
 			}
 
 			if err := tagService.Untag(ctx, t); err != nil {
-				return pkgerrors.Wrapf(err, "untag %s", fullRef)
+				fmt.Printf("untag %s failed: %v\n", fullRef, err)
 			}
 		}
 
