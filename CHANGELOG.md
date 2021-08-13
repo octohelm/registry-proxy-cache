@@ -5,6 +5,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [0.0.2](https://github.com/octohelm/registry-proxy-cache/compare/v0.0.1...v0.0.2)
+
+### Bug Fixes
+
+* **fix** ignore untag error in gc ([0394509](https://github.com/octohelm/registry-proxy-cache/commit/0394509af5ead8ade7ce0110e036946c54b31a4e))
+
+
+
 # [0.0.1](https://github.com/octohelm/registry-proxy-cache/compare/v0.0.0...v0.0.1)
 
 ### Bug Fixes
