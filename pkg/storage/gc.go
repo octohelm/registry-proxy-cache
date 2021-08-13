@@ -2,9 +2,9 @@ package storage
 
 import (
 	"context"
-	"fmt"
 	"github.com/distribution/distribution/v3"
 	"github.com/distribution/distribution/v3/configuration"
+	dcontext "github.com/distribution/distribution/v3/context"
 	"github.com/distribution/distribution/v3/reference"
 	"github.com/distribution/distribution/v3/registry/storage"
 	"github.com/distribution/distribution/v3/registry/storage/driver"
@@ -28,7 +28,7 @@ func ClusterGarbageCollect(ctx context.Context, m map[string]*configuration.Conf
 		}
 
 		if err := UntagUnused(ctx, sr, hubGroupedContainerImages[hub]); err != nil {
-			return pkgerrors.Wrapf(err, "[%s] untag unused failed:", hub)
+			dcontext.GetLogger(ctx).Error(pkgerrors.Wrapf(err, "[%s] untag unused failed", hub))
 		}
 
 		if err := storage.MarkAndSweep(ctx, d, sr, storage.GCOpts{
@@ -88,7 +88,7 @@ func UntagUnused(ctx context.Context, sr distribution.Namespace, used map[string
 			}
 
 			if err := tagService.Untag(ctx, t); err != nil {
-				fmt.Printf("untag %s failed: %v\n", fullRef, err)
+				return pkgerrors.Wrapf(err, "untag %s failed", fullRef)
 			}
 		}
 
