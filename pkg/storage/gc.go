@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/distribution/distribution/v3"
 	"github.com/distribution/distribution/v3/configuration"
-	dcontext "github.com/distribution/distribution/v3/context"
 	"github.com/distribution/distribution/v3/reference"
 	"github.com/distribution/distribution/v3/registry/storage"
 	"github.com/distribution/distribution/v3/registry/storage/driver"
@@ -28,18 +27,35 @@ func ClusterGarbageCollect(ctx context.Context, m map[string]*configuration.Conf
 		}
 
 		if err := UntagUnused(ctx, sr, hubGroupedContainerImages[hub]); err != nil {
-			dcontext.GetLogger(ctx).Error(pkgerrors.Wrapf(err, "[%s] untag unused failed", hub))
+			if _, ok := unwrap(err).(driver.PathNotFoundError); ok {
+				continue
+			}
+			return pkgerrors.Wrapf(err, "[%s] untag unused failed", hub)
 		}
 
 		if err := storage.MarkAndSweep(ctx, d, sr, storage.GCOpts{
 			DryRun:         dryRun,
 			RemoveUntagged: true,
 		}); err != nil {
+			if _, ok := unwrap(err).(driver.PathNotFoundError); ok {
+				continue
+			}
 			return pkgerrors.Wrapf(err, "[%s] sweep failed:", hub)
 		}
 	}
 
 	return nil
+}
+
+func unwrap(err error) error {
+	if ew, ok := err.(interface{ Unwrap() error }); ok {
+		e := ew.Unwrap()
+		if e == err {
+			return e
+		}
+		return unwrap(e)
+	}
+	return err
 }
 
 func NewStorageRegistryAndDriver(ctx context.Context, cstorage configuration.Storage) (distribution.Namespace, driver.StorageDriver, error) {

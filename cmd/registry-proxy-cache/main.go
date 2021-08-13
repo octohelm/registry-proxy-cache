@@ -4,9 +4,10 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"os"
+
 	"github.com/octohelm/registry-proxy-cache/pkg/kubernetes"
 	"github.com/octohelm/registry-proxy-cache/pkg/storage"
-	"os"
 
 	dcontext "github.com/distribution/distribution/v3/context"
 	"github.com/distribution/distribution/v3/version"

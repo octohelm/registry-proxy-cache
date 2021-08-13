@@ -7,6 +7,7 @@ require (
 	github.com/bshuster-repo/logrus-logstash-hook v1.0.2 // indirect
 	github.com/bugsnag/bugsnag-go v2.1.1+incompatible // indirect
 	github.com/bugsnag/panicwrap v1.3.4 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/denverdino/aliyungo v0.0.0-20210809110242-ba7e8e46f2e4 // indirect
 	github.com/distribution/distribution/v3 v3.0.0-20210804104954-38ab4c606ee3
 	github.com/docker/go-metrics v0.0.1
