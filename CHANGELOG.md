@@ -5,6 +5,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [0.0.3](https://github.com/octohelm/registry-proxy-cache/compare/v0.0.2...v0.0.3)
+
+### Bug Fixes
+
+* **fix** untag unused could ignore ([158a141](https://github.com/octohelm/registry-proxy-cache/commit/158a141de6913f73bdfdf528db1dced0d0cbe3e2))
+
+
+
 # [0.0.2](https://github.com/octohelm/registry-proxy-cache/compare/v0.0.1...v0.0.2)
 
 ### Bug Fixes
