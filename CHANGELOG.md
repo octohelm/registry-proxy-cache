@@ -5,6 +5,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [0.0.4](https://github.com/octohelm/registry-proxy-cache/compare/v0.0.3...v0.0.4)
+
+### Bug Fixes
+
+* **fix** gc should ignore driver.PathNotFoundError ([d49dd43](https://github.com/octohelm/registry-proxy-cache/commit/d49dd43335037d7b15903e0dc164ecea4d308f45))
+
+
+
 # [0.0.3](https://github.com/octohelm/registry-proxy-cache/compare/v0.0.2...v0.0.3)
 
 ### Bug Fixes
