@@ -5,6 +5,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [0.0.1](https://github.com/octohelm/registry-proxy-cache/compare/v0.0.0...v0.0.1)
+
+### Bug Fixes
+
+* **fix** storage drvier include oss ([1d8c92f](https://github.com/octohelm/registry-proxy-cache/commit/1d8c92ff4f581a2519d3a0bc99be0c4b86e860dc))
+* **fix** CGO_ENABLED=0 causes /etc/hosts not work, https://github.com/golang/go/issues/2284 ([25d1ff0](https://github.com/octohelm/registry-proxy-cache/commit/25d1ff0fd9367f9312825f3cb0d24d4762ff4442))
+* **fix** user-agent modify should before registry handler ([4047829](https://github.com/octohelm/registry-proxy-cache/commit/4047829ff71e4d1dfe389132dea300b1c05d914c))
+* **fix** better log ([2f5b29f](https://github.com/octohelm/registry-proxy-cache/commit/2f5b29f3880823db47734810a69d75601f0b6e1f))
+
+
+
 # 0.0.0
 
 ### Features
