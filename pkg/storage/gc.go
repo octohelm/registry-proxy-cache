@@ -88,7 +88,7 @@ func UntagUnused(ctx context.Context, sr distribution.Namespace, used map[string
 			}
 
 			if err := tagService.Untag(ctx, t); err != nil {
-				return err
+				return pkgerrors.Wrapf(err, "untag %s", fullRef)
 			}
 		}
 
