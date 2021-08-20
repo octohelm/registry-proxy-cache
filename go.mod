@@ -7,7 +7,6 @@ require (
 	github.com/bshuster-repo/logrus-logstash-hook v1.0.2 // indirect
 	github.com/bugsnag/bugsnag-go v2.1.1+incompatible // indirect
 	github.com/bugsnag/panicwrap v1.3.4 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/denverdino/aliyungo v0.0.0-20210809110242-ba7e8e46f2e4 // indirect
 	github.com/distribution/distribution/v3 v3.0.0-20210804104954-38ab4c606ee3
 	github.com/docker/go-metrics v0.0.1
@@ -20,7 +19,7 @@ require (
 	github.com/gorilla/handlers v1.5.1
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
-	github.com/onsi/gomega v1.15.0
+	github.com/onsi/gomega v1.16.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/common v0.30.0 // indirect
 	github.com/prometheus/procfs v0.7.2 // indirect
