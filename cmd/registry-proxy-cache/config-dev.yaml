@@ -6,7 +6,7 @@ log:
     disabled: true
 
 http:
-  addr: 0.0.0.0:5000
+  addr: 0.0.0.0:5001
   debug:
     addr: 0.0.0.0:5005
     prometheus:
